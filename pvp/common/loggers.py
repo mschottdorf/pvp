@@ -133,6 +133,7 @@ class ContinuousData(pytb.IsDescription):
     control_out  = pytb.Float64Col()
     oxygen       = pytb.Float64Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
+    flow_secondary = pytb.Float64Col()
 
 class ControlCommand(pytb.IsDescription):
     """
@@ -164,7 +165,7 @@ class DataLogger:
     Creates a hdf5 file with this general structure:
         / root
         |--- waveforms (group)
-        |    |--- time | pressure_data | flow_out | control_signal_in | control_signal_out | FiO2 | Cycle No.
+        |    |--- time | pressure_data | flow_out | control_signal_in | control_signal_out | FiO2 | Cycle No. | flow_secondary
         |
         |--- controls (group)
         |    |--- (time, controllsignal)
@@ -295,6 +296,7 @@ class DataLogger:
             datapoint['control_out']  = control_values.control_signal_out
             datapoint['oxygen']       = sensor_values.FIO2
             datapoint['cycle_number'] = sensor_values.breath_count
+            datapoint['flow_secondary'] = control_values.flow_secondary
             datapoint.append()
 
     def store_control_command(self, control_setting: 'ControlSetting'):

@@ -181,9 +181,10 @@ class ControlValues:
     :param control_signal_in:
     :param control_signal_out:
     """
-    def __init__(self, control_signal_in, control_signal_out):
+    def __init__(self, control_signal_in, control_signal_out, flow_secondary):
         self.control_signal_in = control_signal_in
         self.control_signal_out = control_signal_out
+        self.flow_secondary = flow_secondary
 
 class DerivedValues:
     """

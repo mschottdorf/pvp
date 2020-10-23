@@ -146,6 +146,8 @@ class ControlModuleBase:
         self.OXYGEN_READ_FREQUENCY = prefs.get_pref('OXYGEN_READ_FREQUENCY')  # Frequency with with oxygen is read. usually ~2s
 
         self._DATA_Qout     = 0           # Measurement of the airflow out
+        self._DATA_FLOW_SECONDARY = 0     # Secondary air flow measurement
+
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self.__DATA_old     = None
         self._last_update   = time.time()
@@ -698,6 +700,7 @@ class ControlModuleBase:
         control_values = ControlValues(
             control_signal_in = self.__control_signal_in,
             control_signal_out = self.__control_signal_out,
+            flow_secondary = self._DATA_FLOW_SECONDARY
         )
 
         #And save both
@@ -869,7 +872,7 @@ class ControlModuleDevice(ControlModuleBase):
         inspiration_phase = (time.time() - self._cycle_start) < self.COPY_SET_I_PHASE
 
         self._DATA_PRESSURE_LIST.append( self.HAL.pressure )             # Append pressure to list -> is averaged over a couple values
-
+        self._DATA_FLOW_SECONDARY = self.HAL._flow_sensor_in                 # Save secondary flow, if used 
         if inspiration_phase:
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
             self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
@@ -1140,6 +1143,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_out(Qout, dt = dt)
 
             self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout
+            self._DATA_FLOW_SECONDARY = Qin
             self.COPY_DATA_OXYGEN = self.Balloon.fio2               # And for logging the simulatede O2 concentration
 
             self._last_update = now

@@ -64,11 +64,14 @@ def test_sensor_storage():
     control_values = ControlValues(
                 control_signal_in = np.random.random(),
                 control_signal_out = np.random.random(),
+                flow_secondary = np.random.random()
     )
     dl.store_waveform_data(sensor_values, control_values)
     dl.flush_logfile
     dl.close_logfile()
     filepath = dl.file
+    dl.log2mat()
+    dl.log2csv()
 
     # Load stuff
     dl2 = DataLogger()  
@@ -76,6 +79,7 @@ def test_sensor_storage():
 
     assert control_values.control_signal_in  == tt['waveform_data']['control_in'][0]
     assert control_values.control_signal_out == tt['waveform_data']['control_out'][0]
+    assert control_values.flow_secondary == tt['waveform_data']['flow_secondary'][0]
     assert sensor_values.breath_count == tt['waveform_data']['cycle_number'][0]
     assert sensor_values.FLOWOUT == tt['waveform_data']['flow_out'][0]
     assert sensor_values.FIO2 == tt['waveform_data']['oxygen'][0]
@@ -101,7 +105,9 @@ def test_derived_storage():
     dl.flush_logfile
     dl.close_logfile()
     filepath = dl.file
-
+    dl.log2mat()
+    dl.log2csv()
+    
     # Load stuff
     dl2 = DataLogger()  
     tt = dl2.load_file(filepath)
@@ -137,10 +143,13 @@ def test_checks():
     control_values = ControlValues(
                 control_signal_in = np.random.random(),
                 control_signal_out = np.random.random(),
+                flow_secondary = np.random.random()
     )
     dl.store_waveform_data(sensor_values, control_values)
     dl.flush_logfile
     dl.close_logfile()
+    dl.log2mat()
+    dl.log2csv()
 
     file1 = dl.file
     parts = file1.split(".0.")
